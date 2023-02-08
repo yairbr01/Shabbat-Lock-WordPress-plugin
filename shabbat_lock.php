@@ -65,7 +65,6 @@ function shabbat_lock_settings() {
     add_settings_section( 'shabbat_lock_settings_section', '', '', 'shabbat-lock-settings' );
     add_settings_field( 'shabbat_lock_select_popup', 'Please select a popup', 'shabbat_lock_select_popup_render', 'shabbat-lock-settings', 'shabbat_lock_settings_section' );
     add_settings_field( 'shabbat_lock_tzeit_time', 'Please select tzeit time', 'shabbat_lock_select_tzeit_time_render', 'shabbat-lock-settings', 'shabbat_lock_settings_section' );
-	add_settings_field( 'shabbat_lock_time_zone', 'Please select time zone', 'shabbat_lock_time_zone_time_render', 'shabbat-lock-settings', 'shabbat_lock_settings_section' );
 }
 
 function shabbat_lock_select_popup_render() {
@@ -97,38 +96,30 @@ function shabbat_lock_select_tzeit_time_render() {
     echo '</select>';
 }
 
-function shabbat_lock_time_zone_time_render() {
-    $options = get_option( 'shabbat_lock_setting' );
-    $selected = isset( $options['shabbat_lock_time_zone'] ) ? $options['shabbat_lock_time_zone'] : '';
-    echo '<select id="shabbat_lock_time_zone" name="shabbat_lock_setting[shabbat_lock_time_zone]" class="select_field">';
-	$timeZones = DateTimeZone::listIdentifiers();
-	foreach($timeZones as $timeZone) {
-		echo '<option value="' . $timeZone . '" '.selected( $selected, "$timeZone", false ).'>' . $timeZone . '</option>';
-	}
-    echo '</select>';
-}
-
 function shabbat_lock_display_popup() {
     $options = get_option( 'shabbat_lock_setting' );
     $popup_id = isset( $options['shabbat_lock_select_popup'] ) ? $options['shabbat_lock_select_popup'] : '';
     $show_popup = false;
 	
-	$timeZone = isset( $options['shabbat_lock_time_zone'] ) ? $options['shabbat_lock_time_zone'] : '';
+	$user_ip = $_SERVER['REMOTE_ADDR'];
+	$location = json_decode(file_get_contents("https://ipinfo.io/{$user_ip}/json"));
+	$timezone = $location->timezone;
+
 	$tzeit_var = isset( $options['shabbat_lock_tzeit_time'] ) ? $options['shabbat_lock_tzeit_time'] : '';
 
-	$tz = new DateTimeZone($timeZone);
+	$tz = new DateTimeZone($timezone);
 
     $location = $tz->getLocation();
     $latitude = $location['latitude'];
     $longitude = $location['longitude'];
 
-	date_default_timezone_set( $timeZone );
+	date_default_timezone_set( $timezone );
 	$date = date( 'Y-m-d' );    
 	$time = date( 'H:i:s' );
 	$day = date('w', strtotime($date));
 		
 	$hebcal_date = file_get_contents( "https://www.hebcal.com/converter?cfg=json&date=$date&g2h=1&strict=1" );
-	$hebcal_time = file_get_contents( "https://www.hebcal.com/zmanim?cfg=json&tzid=$timeZone&latitude=$latitude&longitude=$longitude&date=$date" );
+	$hebcal_time = file_get_contents( "https://www.hebcal.com/zmanim?cfg=json&tzid=$timezone&latitude=$latitude&longitude=$longitude&date=$date" );
 	
 	$hebcal_date_obj = json_decode($hebcal_date);
 	$events = $hebcal_date_obj->events;
