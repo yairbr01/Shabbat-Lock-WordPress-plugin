@@ -17,13 +17,46 @@ function shabbat_lock_options() {
         wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
     }
     echo '<div class="wrap">';
-    echo '<h1>Shabbat Lock Settings</h1>';
+    echo '<h1 class="wrap_h1">Shabbat Lock Settings</h1>';
     echo '<form action="options.php" method="post">';
     settings_fields( 'shabbat_lock_settings_group' );
     do_settings_sections( 'shabbat-lock-settings' );
     submit_button();
     echo '</form>';
     echo '</div>';
+
+	echo '<style>
+    .wrap {
+		background-color: #FFFFFF;
+		border-radius: 20px;
+		border: 1px solid #CCCCCC;
+		padding: 50px;
+		width: 50%;
+		margin: 50px 0px 50px 0px;
+	}
+	.wp-core-ui select {
+		width: 100%;
+    	border: 1px solid #CCCCCC;
+	    border-radius: 7.5px;
+    	padding: 5px 10px 5px 10px;
+	}
+	.wp-core-ui .button-primary {
+		border-radius: 7.5px;
+		padding: 5px 20px 5px 20px;
+		font-size: 15px;
+	}
+	.form-table th {
+		vertical-align: middle;
+		font-size: 15px;
+	}
+	.wrap_h1 {
+		color: #FFFFFF;
+		background-color: black;
+		padding: 5px 10px 5px 10px !important;
+		border-radius: 7.5px;
+		margin-bottom: 25px !important;
+	}
+    </style>';
 }
 
 add_action( 'admin_init', 'shabbat_lock_settings' );
@@ -38,7 +71,7 @@ function shabbat_lock_settings() {
 function shabbat_lock_select_popup_render() {
     $options = get_option( 'shabbat_lock_setting' );
     $selected = isset( $options['shabbat_lock_select_popup'] ) ? $options['shabbat_lock_select_popup'] : '';
-    echo '<select id="shabbat_lock_select_popup" name="shabbat_lock_setting[shabbat_lock_select_popup]">';
+    echo '<select id="shabbat_lock_select_popup" name="shabbat_lock_setting[shabbat_lock_select_popup]" class="select_field">';
 
     $args = [
 		'posts_per_page' => -1,
@@ -57,7 +90,7 @@ function shabbat_lock_select_popup_render() {
 function shabbat_lock_select_tzeit_time_render() {
     $options = get_option( 'shabbat_lock_setting' );
     $selected = isset( $options['shabbat_lock_tzeit_time'] ) ? $options['shabbat_lock_tzeit_time'] : '';
-    echo '<select id="shabbat_lock_tzeit_time" name="shabbat_lock_setting[shabbat_lock_tzeit_time]">';
+    echo '<select id="shabbat_lock_tzeit_time" name="shabbat_lock_setting[shabbat_lock_tzeit_time]" class="select_field">';
     echo '<option value="tzeit42min" '.selected( $selected, 'tzeit42min', false ).'>tzeit 42 minutes</option>';
     echo '<option value="tzeit50min" '.selected( $selected, 'tzeit50min', false ).'>tzeit 50 minutes</option>';
     echo '<option value="tzeit72min" '.selected( $selected, 'tzeit72min', false ).'>tzeit 72 minutes</option>';
@@ -67,7 +100,7 @@ function shabbat_lock_select_tzeit_time_render() {
 function shabbat_lock_time_zone_time_render() {
     $options = get_option( 'shabbat_lock_setting' );
     $selected = isset( $options['shabbat_lock_time_zone'] ) ? $options['shabbat_lock_time_zone'] : '';
-    echo '<select id="shabbat_lock_time_zone" name="shabbat_lock_setting[shabbat_lock_time_zone]">';
+    echo '<select id="shabbat_lock_time_zone" name="shabbat_lock_setting[shabbat_lock_time_zone]" class="select_field">';
 	$timeZones = DateTimeZone::listIdentifiers();
 	foreach($timeZones as $timeZone) {
 		echo '<option value="' . $timeZone . '" '.selected( $selected, "$timeZone", false ).'>' . $timeZone . '</option>';
